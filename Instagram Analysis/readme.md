@@ -2,6 +2,13 @@
 
 #### Problem Statement :
 I have downloaded data from my Instagram Account. This data 5-6 files. I'll use the below 3 files for my furtehr analysis:
+
+| __File__           | __Detail__                                                 |
+|--------------------|------------------------------------------------------------|
+| media.json         |  Contains data about my uploads (stories,pics and videos)  |
+| connections.json   | Contains data about followers/following                    |
+| likes.json         | Contains about about who I liked                           |
+
 #### 1. media.json - Contains data about my uploads (stories,pics and videos)
 #### 2. connections.json - Contains data about followers/following
 #### 3. likes.json - Contains about about who I liked
