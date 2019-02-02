@@ -377,6 +377,7 @@ LikesJan19toJune19 <- predict(lmfit,data.frame(Month=seq(1:62)))
 
 LikesJan19toJune19[57:62]
 ```
+#### Forecasted values of my usage(likes done) from Jan 19 to June 19 using Classical Decomposition
 
 | __Jan19__ | __Feb19__ | __Mar19__ |__Apr19__ | __May19__ | __Jun19__|
 |-----------|-----------|-----------|----------|-----------|----------|
@@ -428,6 +429,7 @@ fcast_auto_arima <- predict(autoarima, n.ahead = 12)
 #Forecasted values for Jan19 to June 19
 fcast_auto_arima$pred[7:12]
 ```
+#### Forecasted values of my usage(likes done) from Jan 19 to June 19 using Auto ARIMA
 | __Jan19__ | __Feb19__ | __Mar19__ |__Apr19__ | __May19__ | __Jun19__|
 |-----------|-----------|-----------|----------|-----------|----------|
 | 1375.24   | 1375.24   | 1375.24   | 1375.24  | 1375.24   | 1375.24  |
