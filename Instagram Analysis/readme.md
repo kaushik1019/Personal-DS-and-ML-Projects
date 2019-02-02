@@ -14,7 +14,7 @@ I have also created a Shiny App of the Exploratory Data Analysis I have done on 
 [Shiny App for my Instagram Analysis](https://yatinkode.shinyapps.io/instaproject/)
 
 
-> Note : Since Instagram does not provide any information about usage statistics, we cannot really forecast the
+> **Note** : Since Instagram does not provide any information about usage statistics, we cannot really forecast the
 > usage of my Instagram in the future. I have considered the number of likes I do every moment as a usage 
 > statistics and forecast the likes done by me on any post/video etc. in the future 6 months. I have the data of
 > my account from May, 2014 to December, 2018. I will forecast the values of  my usage(likes done) for the 
