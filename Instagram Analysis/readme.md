@@ -384,10 +384,17 @@ LikesJan19toJune19[57:62]
 ***/
 
 /***
-| __Animals__ | __Sports__ | __Fruits__ |
-|-------------|------------|------------|
-| Cat         | Soccer     | Apple      |
-| Dog         | Basketball | Orange     |
+\begin{table}[]
+\centering
+\caption{My caption}
+\label{my-label}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Animals} & \textbf{Sports}  & \textbf{Fruits} \\ \hline
+Cat     & Soccer     & Apple  \\ \hline
+Dog     & Basketball & Orange \\ \hline
+\end{tabular}
+\end{table}
 ***/
 
 #### Plotting evaluated model and forecasted values for next six months
