@@ -19,3 +19,25 @@ statistics and forecast the likes done by me on any post/video etc. in the futur
 my account from May, 2014 to December, 2018. I will forecast the values of  my usage(likes done) for the 
 months of January 2019 to June 2019
 ```
+### Lets start with the code
+
+#### Loading required libraries
+```R
+library(jsonlite)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(forecast)
+library(tseries)
+library(data.table)
+library(scales)
+library(reshape2)
+```
+
+#### Loading Data
+```R
+media <- fromJSON("media.json", flatten=TRUE)              #Loading media json file
+connections <- fromJSON("connections.json", flatten=TRUE)  #Loading connection data
+likes <- fromJSON("likes.json", flatten=TRUE)              #Loading likes data
+```
+
