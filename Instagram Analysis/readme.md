@@ -5,3 +5,6 @@ I have downloaded data from my Instagram Account. This data 5-6 files. I'll use 
 #### 1. media.json - Contains data about my uploads (stories,pics and videos)
 #### 2. connections.json - Contains data about followers/following
 #### 3. likes.json - Contains about about who I liked
+
+I have also created a Shiny App of the Exploratory Data Analysis I have done on the data for better understanding
+![data](https://yatinkode.shinyapps.io/instaproject/)
