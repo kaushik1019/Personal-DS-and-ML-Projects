@@ -11,17 +11,15 @@ I have downloaded data from my Instagram Account. This data 5-6 files. I'll use 
 
 I have also created a Shiny App of the Exploratory Data Analysis I have done on the data for better understanding
 
-[go](http://stackoverflow.com){:target="_blank" rel="noopener"}
+[Shiny App for my Instagram Analysis](https://yatinkode.shinyapps.io/instaproject/)
 
-[Shiny App for my Instagram Analysis](https://yatinkode.shinyapps.io/instaproject/){:target="_blank" rel="noopener"}
 
-```
-Note : Since Instagram does not provide any information about usage statistics, we cannot really forecast the
-usage of my Instagram in the future. I have considered the number of likes I do every moment as a usage 
-statistics and forecast the likes done by me on any post/video etc. in the future 6 months. I have the data of
-my account from May, 2014 to December, 2018. I will forecast the values of  my usage(likes done) for the 
-months of January 2019 to June 2019
-```
+> Note : Since Instagram does not provide any information about usage statistics, we cannot really forecast the
+> usage of my Instagram in the future. I have considered the number of likes I do every moment as a usage 
+> statistics and forecast the likes done by me on any post/video etc. in the future 6 months. I have the data of
+> my account from May, 2014 to December, 2018. I will forecast the values of  my usage(likes done) for the 
+> months of January 2019 to June 2019
+
 ### Lets start with the code
 
 #### Loading required libraries
