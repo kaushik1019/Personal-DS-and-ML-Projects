@@ -40,4 +40,86 @@ media <- fromJSON("media.json", flatten=TRUE)              #Loading media json f
 connections <- fromJSON("connections.json", flatten=TRUE)  #Loading connection data
 likes <- fromJSON("likes.json", flatten=TRUE)              #Loading likes data
 ```
+#### Performing EDA on media data
+```R
+str(media)
 
+#-----------------getting the pics upload info out of media--------------------------
+pics<-media$photos
+
+pics<-separate(pics,taken_at,c("upload_date","upload_time"),sep="T")
+
+pics$type="photo"    #Assigning the photo type to pics needed for further analysis
+
+#Removing Location since it is not included in stories
+pics<-pics[,-5]
+
+#------------------getting the videos upload info out of media-----------------------
+videos<-media$videos
+videos<-separate(videos,taken_at,c("upload_date","upload_time"),sep="T")
+
+videos$type="video" #Assigning the video type to video needed for further analysis
+
+#Removing Location since it is not included in stories
+videos<-videos[,-4]
+
+#--------------------getting the stories upload info out of media---------------------
+stories<-media$stories
+
+#Removing data of 2019
+stories<-stories[-which(grepl("2019-", stories$taken_at, fixed=TRUE)),]
+
+stories<-separate(stories,taken_at,c("upload_date","upload_time"),sep="T")
+
+stories$type="story"  #Assigning the story type to stories needed for further analysis
+
+#combining pics ,video and stories into sngle dataframe
+uploads<-rbind(pics,videos,stories)
+nrow(uploads)
+
+table(uploads$type)
+#photo story video 
+#183    57     7 
+
+sumfreq<-sum(as.data.frame(table(uploads$type))$Freq)
+
+#Create a pie chart for getting proportion of pics,videos and stories
+
+# Create a basic bar
+pie <- ggplot(as.data.frame(table(uploads$type)), aes(x="", y=Freq, fill=Var1)) + geom_bar(stat="identity", width=100)
+
+# Convert to pie (polar coordinates) and add labels
+pie = pie + coord_polar("y", start=0) +
+      geom_text(aes(label = paste0(round((Freq*100)/sumfreq), "%")), position = position_stack(vjust = 0.5))
+
+# Remove labels and add title
+pie = pie + labs(x = NULL, y = NULL, fill = NULL, title = "Distribution of Media Uploads")
+
+
+# Tidy up the theme
+pie + theme_classic() + theme(axis.line = element_blank(),
+                              axis.text = element_blank(),
+                              axis.ticks = element_blank(),
+                              plot.title = element_text(hjust = 0.5, color = "#666666"))
+
+
+#get monthly uploads
+uploads$upload_date<-as.Date(uploads$upload_date,"%Y-%m-%d")
+
+#Uploads per month
+uploads$month<-format(uploads$upload_date,"%Y-%m")
+
+ggplot(uploads,aes(x=as.factor(uploads$month),y=1,fill=as.factor(uploads$type)))+
+  geom_bar(stat = "identity")+xlab("Month-Year")+ylab("Number of uploads")+
+  ggtitle("Uploads per Month")+guides(fill=guide_legend(title="Post Type"))+
+  theme(axis.text.x=element_text(angle=60, hjust=1))
+
+
+#Uploads per year
+uploads$Year<-format(uploads$upload_date,"%Y")
+
+ggplot(uploads,aes(x=as.factor(uploads$Year),y=1,fill=as.factor(uploads$type)))+
+  geom_bar(stat = "identity")+xlab("Year")+ylab("Number of uploads")+
+  ggtitle("Uploads per year")+guides(fill=guide_legend(title="Post Type"))
+
+```
