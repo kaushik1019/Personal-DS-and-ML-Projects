@@ -103,7 +103,6 @@ pie + theme_classic() + theme(axis.line = element_blank(),
                               plot.title = element_text(hjust = 0.5, color = "#666666"))
 ```
 ![data](https://github.com/yatinkode/Personal-DS-and-ML-Projects/blob/master/Instagram%20Analysis/images/mediapie.png)
-
 ```R
 #get monthly uploads
 uploads$upload_date<-as.Date(uploads$upload_date,"%Y-%m-%d")
@@ -114,4 +113,186 @@ uploads$month<-format(uploads$upload_date,"%Y-%m")
 #Uploads per year
 uploads$Year<-format(uploads$upload_date,"%Y")
 ```
+#### Performing EDA on connections data
+
+```R
+str(connections)
+
+#------------------------ Followers ------------------------------------------------------
+
+#tidying up the followers data frame
+followers<-as.data.frame(connections$followers,header=F)
+followers<-gather(followers,follower_id,time_followed , -1:-2)
+followers[nrow(followers)+1,3]<-colnames(followers[1])
+followers[nrow(followers),4]<-as.character(followers[1,1])
+followers[nrow(followers)+1,3]<-colnames(followers[2])
+followers[nrow(followers),4]<-as.character(followers[1,2])
+followers<-followers[,c(3,4)]
+
+#Removing data to 2019
+followers<-followers[-which(grepl("2019-", followers$time_followed, fixed=TRUE)),]
+
+#Convert followed time to date format
+followers$time_followed<-as.Date(followers$time_followed,"%Y-%m-%d")
+
+#followers per month
+followers$month<-format(followers$time_followed,"%Y-%m")
+
+#followers per year
+followers$Year<-format(followers$time_followed,"%Y")
+
+#------------------------ Following ------------------------------------------------------
+
+following<-as.data.frame(connections$following)
+
+#tidying up following data frame to get correct data format
+following<-gather(following,following_id,time_following , -1:-2)
+following[nrow(following)+1,3]<-colnames(following[1])
+following[nrow(following),4]<-as.character(following[1,1])
+following[nrow(following)+1,3]<-colnames(following[2])
+following[nrow(following),4]<-as.character(following[1,2])
+following<-following[,c(3,4)]
+
+#Removing data to 2019
+following<-following[-which(grepl("2019-", following$time_following, fixed=TRUE)),]
+
+#Convert following time to date format
+following$time_following<-as.Date(following$time_following,"%Y-%m-%d")
+
+#following per month
+following$Month<-format(following$time_following,"%Y-%m")
+
+#following per year
+following$Year<-format(following$time_following,"%Y")
+```
+#### Performing EDA on likes data
+```R
+likes <- fromJSON("likes.json", flatten=TRUE)
+likes_df<-likes$media_likes
+
+likes_df<-as.data.frame(likes_df)
+
+#giving column names to the dataframe
+names(likes_df)<-c("like_time","like_uid")
+
+#Removing records of year 2019
+likes_df<-likes_df[-which(grepl("2019-", likes_df$like_time, fixed=TRUE)),]
+
+#Getting top 5 userids I liked
+most_liked<-head(arrange(aggregate(likes_df$like_time, list(likes_df$like_uid), length),desc(x)),5)
+most_liked$Group.1<-as.character(c("U1","U2","U3","U4","U5"))
+
+#top most liked people/pages by me
+ggplot(most_liked,aes(x=as.factor(most_liked$Group.1),y=most_liked$x))+geom_bar(stat = "identity",fill="steelblue")+theme_bw()+labs(x="Most Liked Users",y="Number of Likes")
+
+#separate date and time
+likes_df<-separate(likes_df,like_time,into=c("date","time"),sep="T")
+
+#Separate hours out of time to further get hourly usage (likes done)
+likes_df<-separate(likes_df,time,into=c("hour"),sep=":",remove=T)
+#hourlyseries<-aggregate(likes_df$like_uid, list(likes_df$hour),FUN=length)
+
+#ggplot(hourlyseries,aes(x=as.factor(hourlyseries$Group.1),y=hourlyseries$x))+geom_bar(stat = "identity",fill="steelblue")+theme_bw()+labs(x="Hours in a Day",y="Number of Likes",title = "Usage(Likes per hour)")
+
+likes_df$date<-as.Date(likes_df$date,"%Y-%m-%d")
+
+#Likes per month
+likes_df$month<-format(likes_df$date,"%Y-%m")
+
+#Converted to monthly series since it is lot of data to plot using likes_df directly makes shiny app unresponsive
+monthlyseries<-likes_df[,c(4,3)]
+monthlyseries<-aggregate(monthlyseries$like_uid, list(monthlyseries$month),FUN=length)
+
+#Likes per year
+likes_df$Year<-format(likes_df$date,"%Y")
+
+#Converted to yearly series since it is lot of data to plot using likes_df directly makes shiny app unresponsive
+yearlyseries<-likes_df[,c(5,3)]
+yearlyseries<-aggregate(yearlyseries$like_uid, list(yearlyseries$Year),FUN=length)
+```
+
+### Agregate monthly likes for time series forecasting
+```R
+names(monthlyseries)[1]<-paste("Month")
+names(monthlyseries)
+
+monthlyseries$timeseq<-seq(1:nrow(monthlyseries))
+
+total_timeser <- ts(monthlyseries$x,frequency=12,start=2014)
+#ts(births, frequency = 12, start = c(1946, 1))
+
+plot(decompose(total_timeser))
+```
+![data](https://github.com/yatinkode/Personal-DS-and-ML-Projects/blob/master/Instagram%20Analysis/images/decomposeseries.png)
+
+#### Smoothing the series
+```R
+total_timeser <- ts(monthlyseries$x)
+
+indata <- monthlyseries[1:50,-1]
+timeser <- ts(indata$x)
+plot(timeser,main="Plot for Timeseries of likes" ,xlab="Month",ylab="Likes")
+
+#smoothing
+w <-1
+smoothedseries <- stats::filter(timeser,filter=rep(1/(2*w+1),(2*w+1)), method='convolution', sides=2)
+
+#Smoothing left end of the time series
+
+diff <- smoothedseries[w+2] - smoothedseries[w+1]
+for (i in seq(w,1,-1)) {
+  smoothedseries[i] <- smoothedseries[i+1] - diff
+}
+
+#Smoothing right end of the time series
+
+n <- length(timeser)
+diff <- smoothedseries[n-w] - smoothedseries[n-w-1]
+for (i in seq(n-w+1, n)) {
+  smoothedseries[i] <- smoothedseries[i-1] + diff
+}
+
+#Plot the smoothed time series
+lines(smoothedseries, col="red", lwd=2)
+```
+![data](https://github.com/yatinkode/Personal-DS-and-ML-Projects/blob/master/Instagram%20Analysis/images/smoothseries.png)
+
+### Using Classical Decomposition to forecast likes(usage in the future)
+```R
+#Building a model on the smoothed time series using classical decomposition
+#First, let's convert the time series to a dataframe
+
+timevals_in <- indata$timeseq
+smootheddf <- as.data.frame(cbind(timevals_in, as.vector(smoothedseries)))
+colnames(smootheddf) <- c('Month', 'Likes')
+
+#Now, let's fit a Multplicative model with trend and seasonality to the data
+#Seasonality will be modeled using a sinusoid function
+
+#Since multplicative model fits the smoothehned series more appropriately than additive model we will choose multiplicative model
+#Formula obtained after multiple trial and errors
+
+outdata <- monthlyseries[51:56,-1]
+
+timevals_out <-  data.frame(Month = outdata$timeseq)
+
+lmformula<-as.formula(Likes ~ sin(Month * 0.2) * poly(Month, 2) + cos(Month * 0.6) * poly(Month, 2))
+
+lmfit <- lm(lmformula, data = smootheddf)
+
+global_pred <- predict(lmfit, Month=timevals_in)
+summary(global_pred)
+
+#Drawing the global prediction
+lines(timevals_in, global_pred, col='blue', lwd=2)
+
+legend("topleft", legend = c("Original","Smooth Series", "Regression Line"),
+       text.width = strwidth("1,000,00000000"),
+       lty = 1, xjust = 1, yjust = 1,
+       col = c("black","red","blue"),
+       title = "Line Types")
+```
+![data](https://github.com/yatinkode/Personal-DS-and-ML-Projects/blob/master/Instagram%20Analysis/images/regressedplot.png)
+
+
 
