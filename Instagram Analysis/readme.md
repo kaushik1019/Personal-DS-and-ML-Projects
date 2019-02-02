@@ -11,7 +11,7 @@ I have downloaded data from my Instagram Account. This data 5-6 files. I'll use 
 
 I have also created a Shiny App of the Exploratory Data Analysis I have done on the data for better understanding
 
-[Shiny App for my Instagram Analysis](https://yatinkode.shinyapps.io/instaproject/)
+[Shiny App for my Instagram Analysis](https://yatinkode.shinyapps.io/instaproject/){:target="_blank"}
 
 ```
 Note : Since Instagram does not provide any information about usage statistics, we cannot really forecast the
@@ -41,6 +41,7 @@ media <- fromJSON("media.json", flatten=TRUE)              #Loading media json f
 connections <- fromJSON("connections.json", flatten=TRUE)  #Loading connection data
 likes <- fromJSON("likes.json", flatten=TRUE)              #Loading likes data
 ```
+
 #### Performing EDA on media data
 ```R
 str(media)
