@@ -213,7 +213,7 @@ yearlyseries<-likes_df[,c(5,3)]
 yearlyseries<-aggregate(yearlyseries$like_uid, list(yearlyseries$Year),FUN=length)
 ```
 
-### Agreegate monthly likes for time series forecasting
+#### Aggregate monthly likes for time series forecasting
 ```R
 names(monthlyseries)[1]<-paste("Month")
 names(monthlyseries)
@@ -227,7 +227,7 @@ plot(decompose(total_timeser))
 ```
 ![data](https://github.com/yatinkode/Personal-DS-and-ML-Projects/blob/master/Instagram%20Analysis/images/decomposeseries.png)
 
-## Smoothing the series
+### Smoothing the series
 ```R
 total_timeser <- ts(monthlyseries$x)
 
