@@ -211,7 +211,7 @@ yearlyseries<-likes_df[,c(5,3)]
 yearlyseries<-aggregate(yearlyseries$like_uid, list(yearlyseries$Year),FUN=length)
 ```
 
-### Agregate monthly likes for time series forecasting
+#### Agreegate monthly likes for time series forecasting
 ```R
 names(monthlyseries)[1]<-paste("Month")
 names(monthlyseries)
@@ -313,4 +313,84 @@ pacf(local_pred,main="PACF plot for local series of Insta Likes")    #MA(0)
 ![data](https://github.com/yatinkode/Personal-DS-and-ML-Projects/blob/master/Instagram%20Analysis/images/acfpacflocal.png)
 
 ```R
+print(adf.test(local_pred,alternative = "stationary"))   #p-value = 0.01 Series is stationary since p-value below 0.05 in ADF test
 
+print(kpss.test(local_pred))                              #p-value = 0.1 Series is stationary since p-value above 0.05 in KPSS test
+
+#Lets see if the stationary series is weak or strong
+armafit <- auto.arima(local_pred)
+armafit                              #ARIMA(0,0,0) with zero mean 
+
+tsdiag(armafit)
+```
+![data](https://github.com/yatinkode/Personal-DS-and-ML-Projects/blob/master/Instagram%20Analysis/images/tsdiaglocal.png)
+```R
+#Now we will get the residual
+resi<-local_pred-fitted(armafit)
+
+plot(resi,main="Residual series for Insta Likes")
+```
+![data](https://github.com/yatinkode/Personal-DS-and-ML-Projects/blob/master/Instagram%20Analysis/images/residualseries.png)
+
+```R
+#Now we check whether the residual is white noise
+#Now we check whether the residual is white noise
+adf.test(resi,alternative = "stationary")
+#Dickey-Fuller = -5.7006, Lag order = 3, p-value = 0.01
+#alternative hypothesis: stationary
+#Since p-value for Augmented Dickey-Fuller Test is less than threshold 0.05 it is stationary
+
+kpss.test(resi)
+#KPSS Level = 0.063939, Truncation lag parameter = 3, p-value = 0.1
+#Since p-value for KPSS test is greater than threshold 0.05 it is stationary
+
+#Hence Residual is white noise
+```
+#### Model Evaulation
+```R
+fcast_arima <- predict(lmfit, timevals_out)
+print(fcast_arima)
+# 1         2         3         4         5         6 
+#1115.8376  964.8210  876.1465  869.9465  947.4187 1090.7357
+
+#MAPE (mean absolute percentage error) for finding out the error in evaluating our model
+MAPE_arima <- accuracy(fcast_arima, outdata$x)[5]
+
+global_pred_out <- predict(lmfit,data.frame(Month =timevals_out))
+
+fcast <- global_pred_out
+
+#Now, let's compare our prediction with the actual values, using MAPE
+
+MAPE_class_dec <- accuracy(fcast,outdata$x)[5]
+MAPE_class_dec                                       #7.683874
+
+#The error is very less so our model is good to go
+
+#Let's also plot the predictions along with original values, to
+#get a visual feel of the fit
+
+class_dec_pred <- c(ts(global_pred),ts(global_pred_out))
+
+#Future pred till June 2019
+LikesJan19toJune19 <- predict(lmfit,data.frame(Month=seq(1:62)))
+
+LikesJan19toJune19[57:62]
+```
+/***
+| __Jan19__ | __Feb19__ | __Mar19___|__Apr19__ | __May19__ | __Jun19___|
+|-----------|-----------|-----------|----------|-----------|-----------|
+| 1270.451  | 1458.200  | 1640.032  | 1824.883 | 2044.050  | 2340.648  |
+***/
+
+#### Plotting evaluated model and forecasted values for next six months
+```R
+plot(ts(total_timeser), col = "black" ,main="Forecasting Insta Likes by Classical Decomposition",xlab="Month",ylab="Likes")
+lines(ts(LikesFeb19toJune19), col = "red")
+abline(v = 50, col="blue", lwd=2, lty=2)
+rect(c(56,0), -1e6, c(62,0), 1e6, col = rgb(0.5,0.5,0.5,1/3), border=NA)
+legend("topleft", legend = c("Original","Predicted","Forecasted band"),
+       text.width = strwidth("1,000,000000000"),
+       lty = 1, xjust = 1, yjust = 1,
+       col = c("black","red"),
+       title = "Line Types")
