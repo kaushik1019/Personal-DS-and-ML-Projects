@@ -81,10 +81,11 @@ table(uploads$type)
 #photo story video 
 #183    57     7 
 
-sumfreq<-sum(as.data.frame(table(uploads$type))$Freq)
-
 #Create a pie chart for getting proportion of pics,videos and stories
+```
 
+#### Create proportion pie chart for uploaded media types
+```R
 # Create a basic bar
 pie <- ggplot(as.data.frame(table(uploads$type)), aes(x="", y=Freq, fill=Var1)) + geom_bar(stat="identity", width=100)
 
@@ -95,31 +96,22 @@ pie = pie + coord_polar("y", start=0) +
 # Remove labels and add title
 pie = pie + labs(x = NULL, y = NULL, fill = NULL, title = "Distribution of Media Uploads")
 
-
 # Tidy up the theme
 pie + theme_classic() + theme(axis.line = element_blank(),
                               axis.text = element_blank(),
                               axis.ticks = element_blank(),
                               plot.title = element_text(hjust = 0.5, color = "#666666"))
+```
+![data](https://github.com/yatinkode/Personal-DS-and-ML-Projects/blob/master/Instagram%20Analysis/images/mediapie.png)
 
-
+```R
 #get monthly uploads
 uploads$upload_date<-as.Date(uploads$upload_date,"%Y-%m-%d")
 
 #Uploads per month
 uploads$month<-format(uploads$upload_date,"%Y-%m")
 
-ggplot(uploads,aes(x=as.factor(uploads$month),y=1,fill=as.factor(uploads$type)))+
-  geom_bar(stat = "identity")+xlab("Month-Year")+ylab("Number of uploads")+
-  ggtitle("Uploads per Month")+guides(fill=guide_legend(title="Post Type"))+
-  theme(axis.text.x=element_text(angle=60, hjust=1))
-
-
 #Uploads per year
 uploads$Year<-format(uploads$upload_date,"%Y")
-
-ggplot(uploads,aes(x=as.factor(uploads$Year),y=1,fill=as.factor(uploads$type)))+
-  geom_bar(stat = "identity")+xlab("Year")+ylab("Number of uploads")+
-  ggtitle("Uploads per year")+guides(fill=guide_legend(title="Post Type"))
-
 ```
+
