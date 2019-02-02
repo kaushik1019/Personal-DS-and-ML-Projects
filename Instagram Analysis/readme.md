@@ -293,6 +293,24 @@ legend("topleft", legend = c("Original","Smooth Series", "Regression Line"),
        title = "Line Types")
 ```
 ![data](https://github.com/yatinkode/Personal-DS-and-ML-Projects/blob/master/Instagram%20Analysis/images/regressedplot.png)
+```R
+#Now, let's look at the locally predictable series. We will remove the trend and seasonality from the series and get local series
+#We will model it as an ARMA series
 
+local_pred <- timeser-global_pred
+plot(local_pred, col='red', type = "l",main="Local series of Insta Likes",xlab="Month",ylab="Likes")  # We have found out the local series
+```
+![data](https://github.com/yatinkode/Personal-DS-and-ML-Projects/blob/master/Instagram%20Analysis/images/localseries.png)
+```R
+#Lets verify whether local series is white noise or not
 
+#ACF test
+acf(local_pred,main="ACF plot for local series of Insta Likes")   #AR(0)
+
+#PACF test
+pacf(local_pred,main="PACF plot for local series of Insta Likes")    #MA(0)
+```
+![data](https://github.com/yatinkode/Personal-DS-and-ML-Projects/blob/master/Instagram%20Analysis/images/acfpacflocal.png)
+
+```R
 
