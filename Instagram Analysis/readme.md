@@ -377,25 +377,10 @@ LikesJan19toJune19 <- predict(lmfit,data.frame(Month=seq(1:62)))
 
 LikesJan19toJune19[57:62]
 ```
-/***
+
 | __Jan19__ | __Feb19__ | __Mar19___|__Apr19__ | __May19__ | __Jun19__|
 |-----------|-----------|-----------|----------|-----------|----------|
 | 1270.451  | 1458.200  | 1640.032  | 1824.883 | 2044.050  | 2340.648 |
-***/
-
-/***
-\begin{table}[]
-\centering
-\caption{My caption}
-\label{my-label}
-\begin{tabular}{|l|l|l|}
-\hline
-\textbf{Animals} & \textbf{Sports}  & \textbf{Fruits} \\ \hline
-Cat     & Soccer     & Apple  \\ \hline
-Dog     & Basketball & Orange \\ \hline
-\end{tabular}
-\end{table}
-***/
 
 #### Plotting evaluated model and forecasted values for next six months
 ```R
