@@ -211,7 +211,7 @@ yearlyseries<-likes_df[,c(5,3)]
 yearlyseries<-aggregate(yearlyseries$like_uid, list(yearlyseries$Year),FUN=length)
 ```
 
-#### Agreegate monthly likes for time series forecasting
+### Agreegate monthly likes for time series forecasting
 ```R
 names(monthlyseries)[1]<-paste("Month")
 names(monthlyseries)
@@ -225,7 +225,7 @@ plot(decompose(total_timeser))
 ```
 ![data](https://github.com/yatinkode/Personal-DS-and-ML-Projects/blob/master/Instagram%20Analysis/images/decomposeseries.png)
 
-#### Smoothing the series
+## Smoothing the series
 ```R
 total_timeser <- ts(monthlyseries$x)
 
@@ -257,7 +257,7 @@ lines(smoothedseries, col="red", lwd=2)
 ```
 ![data](https://github.com/yatinkode/Personal-DS-and-ML-Projects/blob/master/Instagram%20Analysis/images/smoothseries.png)
 
-### Using Classical Decomposition to forecast likes(usage in the future)
+## Using Classical Decomposition to forecast likes(usage in the future)
 ```R
 #Building a model on the smoothed time series using classical decomposition
 #First, let's convert the time series to a dataframe
@@ -393,3 +393,63 @@ legend("topleft", legend = c("Original","Predicted","Forecasted band"),
        lty = 1, xjust = 1, yjust = 1,
        col = c("black","red"),
        title = "Line Types")
+```
+![data](https://github.com/yatinkode/Personal-DS-and-ML-Projects/blob/master/Instagram%20Analysis/images/forecastingclassical.png)
+
+## Using Auto ARIMA to forecast likes(usage in the future)
+```R
+autoarima <- auto.arima(timeser)
+autoarima                        #ARIMA(0,1,1) 
+#ARIMA method predicts that the series is of AR(2) and needed 1 level of differencing
+
+plot(autoarima$x, col="black",main="Plotting Insta Likes using Auto-ARIMA",xlab="Month",ylab="Likes")
+lines(fitted(autoarima), col="red")
+legend("topleft", legend = c("Original","Forecasted"),
+       text.width = strwidth("1,000,000000"),
+       lty = 1, xjust = 1, yjust = 1,
+       col = c("black","red"),
+       title = "Line Types")
+```
+![data](https://github.com/yatinkode/Personal-DS-and-ML-Projects/blob/master/Instagram%20Analysis/images/autoarimaseries.png)
+```R
+resi_auto_arima <- timeser - fitted(autoarima)
+
+adf.test(resi_auto_arima,alternative = "stationary")
+#Dickey-Fuller = -2.7296, Lag order = 3, p-value = 0.2816
+#Hence residual is Stationary or white noise since p-value of ADF test is less than 0.05
+
+kpss.test(resi_auto_arima)
+#KPSS Level = 0.15451, Truncation lag parameter = 3, p-value = 0.1
+#Hence residual is white noise since p-value of KPSS test greater tha 0.05
+
+#Also, let's evaluate the model using MAPE and forecast the future values
+fcast_auto_arima <- predict(autoarima, n.ahead = 12)
+
+#Forecasted values for Jan19 to June 19
+fcast_auto_arima$pred[7:12]
+```
+| __Jan19__ | __Feb19__ | __Mar19__ |__Apr19__ | __May19__ | __Jun19__|
+|-----------|-----------|-----------|----------|-----------|----------|
+| 1375.24   | 1375.24   | 1375.24   | 1375.24  | 1375.24   | 1375.24  |
+
+```R
+MAPE_auto_arima <- accuracy(fcast_auto_arima$pred,outdata$x)[5]
+MAPE_auto_arima               #38.9066
+#MAPE value obtained is pretty good in Auto ARIMA test
+
+#Lastly, let's plot the predictions along with original values, to
+#get a visual feel of the fit
+auto_arima_pred <- c(fitted(autoarima),ts(fcast_auto_arima$pred))
+
+#Plotting future forecast using Auto ARIMA
+plot(total_timeser, col = "black",main="Forecasting Insta Likes using Auto-ARIMA",xlab="Month",ylab="Sales")
+lines(auto_arima_pred, col = "red")
+abline(v = 42, col="blue", lwd=2, lty=2)
+rect(c(56,0), -1e6, c(62,0), 1e6, col = rgb(0.5,0.5,0.5,1/3), border=NA)
+legend("topleft", legend = c("Original","Predicted","Forecasted band"),
+       text.width = strwidth("1,000,000000000"),
+       lty = 1, xjust = 1, yjust = 1,
+       col = c("black","red","grey"),
+       title = "Line Types")
+```
+![data](https://github.com/yatinkode/Personal-DS-and-ML-Projects/blob/master/Instagram%20Analysis/images/forecastautoarima.png)
