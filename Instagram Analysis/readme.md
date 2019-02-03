@@ -1,7 +1,7 @@
 # Analysis of my Instagram Account
 
 #### Problem Statement :
-I have downloaded data from my Instagram Account. This data 5-6 files. I'll use the below 3 files for my furtehr analysis:
+I have downloaded data from my Instagram Account. This data consists of 5-6 files. I'll use the below 3 files for my further analysis:
 
 | __File__           | __Detail__                                                 |
 |--------------------|------------------------------------------------------------|
